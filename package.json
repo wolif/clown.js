@@ -1,0 +1,11 @@
+{
+    "name": "service-fw",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "license": "MIT",
+    "dependencies": {
+        "uuid": "3.3.3",
+        "lodash": "4.17.15"
+    }
+}

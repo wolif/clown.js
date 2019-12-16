@@ -16,44 +16,46 @@ class Jsonrpc extends EventEmitter
         this.loader = loader;
     }
 
-    //important method, can't rename
+    //important method, don't rename
     respond(requestBody, request, response) {
+        response.setHeader('content-type', 'application/json');
+
         let result = null;
         let req = {};
+        
         try {
             req = Wrapper.unpack(requestBody);
         } catch (err) {
             this.emit('error', err);
-            return Result.failed(_.has(req, 'id') ? req.id : null, err.message, err.code);
+            return Wrapper.pack(Result.failed(_.has(req, 'id') ? req.id : null, err.message, err.code));
         }
 
         const self = this;
         if (_.isArray(req)) {
             result = [];
-            req.forEach(oneReq => {
-                result.push(self.invokeMethod(oneReq, request, response));
+            req.forEach(jsonrpcReq => {
+                result.push(self.invokeMethod(jsonrpcReq, request, response));
             });
         } else {
             result = this.invokeMethod(req, request, response);
         }
 
-        response.setHeader('content-type', 'application/json');
         return Wrapper.pack(result);
     }
 
-    invokeMethod(jsonReq, request, response) {
+    invokeMethod(jsonrpcReq, request, response) {
         try {
-            const method = (typeof this.loader === 'function' ? this.loader(jsonReq.method) : null);
+            const method = (typeof this.loader === 'function' ? this.loader(jsonrpcReq.method) : null);
             if (typeof method !== 'function') {
                 throw new Error(errors.METHOD_NOT_FOUND.message, errors.METHOD_NOT_FOUND.code);
             }
-            this.emit('server.beforeMethodExec', method, jsonReq.params);
-            const res = method(jsonReq.params, this.app, request, response);
+            this.emit('server.beforeMethodExec', method, jsonrpcReq.params);
+            const res = method(jsonrpcReq.params, this.app, request, response);
             this.emit('server.afterMethodExec', method, res);
-            return Result.success(res, jsonReq.id);
+            return Result.success(res, jsonrpcReq.id);
         } catch (err) {
             this.emit('error', err);
-            return Result.failed(jsonReq.id, err.message, err.code);
+            return Result.failed(jsonrpcReq.id, err.message, err.code);
         }
     }
 }

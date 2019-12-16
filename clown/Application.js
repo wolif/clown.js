@@ -35,7 +35,7 @@ class Application extends EventEmitter
 
             request.on('end', function () {
                 self.emit('data', requestBody);
-                const res = self.protocol.respond(requestBody, request, response, self);
+                const res = self.protocol.respond(requestBody, request, response);
                 response.setHeader('content-length', res.length ? res.length : 0);
                 response.end(res);
             });

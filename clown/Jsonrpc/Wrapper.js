@@ -21,7 +21,7 @@ class Wrapper extends EventEmitter
         }
     }
 
-    decode(reqText) {
+    unpack(reqText) {
         let ret = {};
         try {
             ret = JSON.parse(reqText);
@@ -38,7 +38,7 @@ class Wrapper extends EventEmitter
         return ret;
     }
 
-    encode(resp) {
+    pack(resp) {
         return JSON.stringify(resp);
     }
 }

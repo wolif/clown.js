@@ -20,7 +20,7 @@ class Jsonrpc extends EventEmitter
         let result = null;
         let req = {};
         try {
-            req = Wrapper.decode(requestBody);
+            req = Wrapper.unpack(requestBody);
         } catch (err) {
             this.emit('error', err);
             return Result.failed(_.has(req, 'id') ? req.id : null, err.message, err.code);
@@ -30,17 +30,17 @@ class Jsonrpc extends EventEmitter
         if (_.isArray(req)) {
             result = [];
             req.forEach(request => {
-                result.push(self.run(request));
+                result.push(self.invokeMethod(request));
             });
         } else {
-            result = this.run(req);
+            result = this.invokeMethod(req);
         }
 
         response.setHeader('content-type', 'application/json');
-        return JSON.stringify(result);
+        return Wrapper.pack(result);
     }
 
-    run(request) {
+    invokeMethod(request) {
         try {
             const method = (typeof this.loader === 'function' ? this.loader(request.method) : null);
             if (typeof method !== 'function') {

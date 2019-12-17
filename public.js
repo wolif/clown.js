@@ -1,5 +1,6 @@
 const Application = require('./clown/Application');
 const Jsonrpc = require('./clown/Jsonrpc/Jsonrpc');
+const Http = require('./clown/Http');
 const fs = require('fs');
 const _ = require('lodash');
 
@@ -19,4 +20,6 @@ jsonrpc.on('error', err => {
     console.log(err);
 });
 
-app.setProtocol(jsonrpc).run();
+app.setProtocol(jsonrpc).setTransport(new Http(app)).run();
+
+module.exports = app;

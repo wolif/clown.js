@@ -1,11 +1,13 @@
 const AppError = require('../clown/AppError');
+const app = require('../public');
 
 module.exports = {
-    test: function(params, app, request, response) {
-        throw new AppError();
+    test: function(params) {
+        // throw new AppError();
         return {
             input: params,
-            config: app.env
+            config: app.env,
+            headers: app.request.headers
         };
     },
     

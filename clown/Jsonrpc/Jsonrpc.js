@@ -22,7 +22,7 @@ class Jsonrpc extends EventEmitter
 
         let result = null;
         let req = {};
-        
+
         try {
             req = Wrapper.unpack(requestBody);
         } catch (err) {
@@ -34,23 +34,23 @@ class Jsonrpc extends EventEmitter
         if (_.isArray(req)) {
             result = [];
             req.forEach(jsonrpcReq => {
-                result.push(self.invokeMethod(jsonrpcReq, request, response));
+                result.push(self.invokeMethod(jsonrpcReq));
             });
         } else {
-            result = this.invokeMethod(req, request, response);
+            result = this.invokeMethod(req);
         }
 
         return Wrapper.pack(result);
     }
 
-    invokeMethod(jsonrpcReq, request, response) {
+    invokeMethod(jsonrpcReq) {
         try {
             const method = (typeof this.loader === 'function' ? this.loader(jsonrpcReq.method) : null);
             if (typeof method !== 'function') {
                 throw new Error(errors.METHOD_NOT_FOUND.message, errors.METHOD_NOT_FOUND.code);
             }
             this.emit('server.beforeMethodExec', method, jsonrpcReq.params);
-            const res = method(jsonrpcReq.params, this.app, request, response);
+            const res = method(...jsonrpcReq.params);
             this.emit('server.afterMethodExec', method, res);
             return Result.success(res, jsonrpcReq.id);
         } catch (err) {

@@ -1,6 +1,5 @@
 const http = require('http');
 const EventEmitter = require('events').EventEmitter;
-const Storage = require('./Storage');
 
 class Http extends EventEmitter
 {

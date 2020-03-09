@@ -2,7 +2,7 @@
     "name": "service-fw",
     "version": "1.0.0",
     "description": "",
-    "main": "index.js",
+    "main": "public.js",
     "license": "MIT",
     "dependencies": {
         "lodash": "4.17.15",
